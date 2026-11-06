@@ -46,12 +46,24 @@ resource "aws_dynamodb_table" "this" {
 
     content {
       name               = global_secondary_index.value.name
-      hash_key           = global_secondary_index.value.hash_key
       projection_type    = global_secondary_index.value.projection_type
-      range_key          = lookup(global_secondary_index.value, "range_key", null)
       read_capacity      = lookup(global_secondary_index.value, "read_capacity", null)
       write_capacity     = lookup(global_secondary_index.value, "write_capacity", null)
       non_key_attributes = lookup(global_secondary_index.value, "non_key_attributes", null)
+
+      key_schema {
+        attribute_name = global_secondary_index.value.hash_key
+        key_type       = "HASH"
+      }
+
+      dynamic "key_schema" {
+        for_each = try(global_secondary_index.value.range_key, null) != null ? [global_secondary_index.value.range_key] : []
+
+        content {
+          attribute_name = key_schema.value
+          key_type       = "RANGE"
+        }
+      }
     }
   }
 
@@ -164,12 +176,24 @@ resource "aws_dynamodb_table" "autoscaled" {
 
     content {
       name               = global_secondary_index.value.name
-      hash_key           = global_secondary_index.value.hash_key
       projection_type    = global_secondary_index.value.projection_type
-      range_key          = lookup(global_secondary_index.value, "range_key", null)
       read_capacity      = lookup(global_secondary_index.value, "read_capacity", null)
       write_capacity     = lookup(global_secondary_index.value, "write_capacity", null)
       non_key_attributes = lookup(global_secondary_index.value, "non_key_attributes", null)
+
+      key_schema {
+        attribute_name = global_secondary_index.value.hash_key
+        key_type       = "HASH"
+      }
+
+      dynamic "key_schema" {
+        for_each = try(global_secondary_index.value.range_key, null) != null ? [global_secondary_index.value.range_key] : []
+
+        content {
+          attribute_name = key_schema.value
+          key_type       = "RANGE"
+        }
+      }
     }
   }
 
@@ -286,12 +310,24 @@ resource "aws_dynamodb_table" "autoscaled_gsi_ignore" {
 
     content {
       name               = global_secondary_index.value.name
-      hash_key           = global_secondary_index.value.hash_key
       projection_type    = global_secondary_index.value.projection_type
-      range_key          = lookup(global_secondary_index.value, "range_key", null)
       read_capacity      = lookup(global_secondary_index.value, "read_capacity", null)
       write_capacity     = lookup(global_secondary_index.value, "write_capacity", null)
       non_key_attributes = lookup(global_secondary_index.value, "non_key_attributes", null)
+
+      key_schema {
+        attribute_name = global_secondary_index.value.hash_key
+        key_type       = "HASH"
+      }
+
+      dynamic "key_schema" {
+        for_each = try(global_secondary_index.value.range_key, null) != null ? [global_secondary_index.value.range_key] : []
+
+        content {
+          attribute_name = key_schema.value
+          key_type       = "RANGE"
+        }
+      }
     }
   }
 
